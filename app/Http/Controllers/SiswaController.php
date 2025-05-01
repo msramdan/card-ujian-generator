@@ -16,6 +16,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Abort;
 
 
 class SiswaController extends Controller implements HasMiddleware
@@ -26,13 +27,11 @@ class SiswaController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            // 'auth',
-
-            // TODO: uncomment this code if you are using spatie permission
-            // new Middleware('permission:siswa view', only: ['index', 'show']),
-            // new Middleware('permission:siswa create', only: ['create', 'store']),
-            // new Middleware('permission:siswa edit', only: ['edit', 'update']),
-            // new Middleware('permission:siswa delete', only: ['destroy']),
+            'auth',
+            new Middleware('permission:siswa view', only: ['index', 'show']),
+            new Middleware('permission:siswa create', only: ['create', 'store']),
+            new Middleware('permission:siswa edit', only: ['edit', 'update']),
+            new Middleware('permission:siswa delete', only: ['destroy']),
         ];
     }
 
@@ -116,9 +115,12 @@ class SiswaController extends Controller implements HasMiddleware
         return view('siswa.show', compact('siswa', 'qrSvg'));
     }
 
-    public function download($id): View
+    public function kartu(Request $request, $id): View
     {
-        // Mengambil data siswa dengan join ke jurusan dan kelas
+        // Ambil token dari query string
+        $token = $request->query('token');
+
+        // Ambil data siswa
         $siswa = DB::table('siswa')
             ->select('siswa.*', 'jurusan.nama_jurusan', 'kelas.nama_kelas')
             ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
@@ -126,8 +128,18 @@ class SiswaController extends Controller implements HasMiddleware
             ->where('siswa.id', $id)
             ->first();
 
+        // Validasi apakah siswa ditemukan
+        if (!$siswa) {
+            abort(404, 'Siswa tidak ditemukan');
+        }
+
+        // Validasi token
+        if ($siswa->token !== $token) {
+            abort(403, 'Token tidak valid');
+        }
+
         // Generate URL untuk download kartu peserta
-        $url = route('kartu-peserta.download', [
+        $url = route('kartu-peserta.kartu', [
             'id' => $siswa->id,
             'token' => $siswa->token,
         ]);
@@ -139,11 +151,11 @@ class SiswaController extends Controller implements HasMiddleware
         );
 
         $writer = new Writer($renderer);
-        $qrSvg = $writer->writeString($url);  // Menghasilkan QR code dalam bentuk SVG
+        $qrSvg = $writer->writeString($url);
 
-        // Return view dengan data siswa dan QR code
         return view('siswa.kartu', compact('siswa', 'qrSvg'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

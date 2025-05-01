@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', __('Detail of Siswas'))
+@section('title', __('Detail of Siswa'))
 
 @section('content')
     <div class="page-heading">
         <div class="page-title">
             <div class="row">
                 <div class="col-12 col-md-8 order-md-1 order-last">
-                    <h3>{{ __('Siswas') }}</h3>
+                    <h3>{{ __('Siswa') }}</h3>
                     <p class="text-subtitle text-muted">
-                        {{ __('Detail of siswa.') }}
+                        {{ __('Detail of Siswa.') }}
                     </p>
                 </div>
 
@@ -18,7 +18,7 @@
                         <a href="/">{{ __('Dashboard') }}</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ route('siswa.index') }}">{{ __('Siswas') }}</a>
+                        <a href="{{ route('siswa.index') }}">{{ __('Siswa') }}</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         {{ __('Detail') }}

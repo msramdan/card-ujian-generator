@@ -19,4 +19,4 @@ Route::middleware(['auth', 'web'])->group(function () {
 Route::resource('jurusan', App\Http\Controllers\JurusanController::class)->middleware('auth');
 Route::resource('kelas', App\Http\Controllers\KelasController::class)->middleware('auth');
 Route::resource('siswa', App\Http\Controllers\SiswaController::class)->middleware('auth');
-Route::get('/kartu-peserta/{id}/download', [ App\Http\Controllers\SiswaController::class, 'download'])->name('kartu-peserta.download');
+Route::get('/kartu-peserta/{id}/kartu', [ App\Http\Controllers\SiswaController::class, 'kartu'])->name('kartu-peserta.kartu');
