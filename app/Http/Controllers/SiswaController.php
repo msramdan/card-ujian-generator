@@ -97,7 +97,7 @@ class SiswaController extends Controller implements HasMiddleware
             ->first();
 
         // Generate URL untuk download kartu peserta
-        $url = route('kartu-peserta.download', [
+        $url = route('kartu-peserta.kartu', [
             'id' => $siswa->id,
             'token' => $siswa->token,
         ]);
