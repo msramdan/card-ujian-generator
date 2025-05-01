@@ -179,7 +179,7 @@
             html2canvas(document.getElementById('card-to-capture')).then(canvas => {
                 // Create download link
                 const link = document.createElement('a');
-                link.download = 'kartu-pelajar-{{ $siswa->nama_siswa }}.png';
+                link.download = 'kartu-psat-{{ $siswa->nama_siswa }}.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
