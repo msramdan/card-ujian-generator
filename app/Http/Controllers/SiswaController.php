@@ -206,7 +206,7 @@ class SiswaController extends Controller implements HasMiddleware
 
         $dataToExport = [];
         // Header
-        $dataToExport[] = ['Nama Siswa', 'NIS', 'Jurusan', 'Kelas', 'Password/Hak Akses', 'Token'];
+        $dataToExport[] = ['Nama Siswa', 'NIS', 'Jurusan', 'Kelas', 'Password/Hak Akses'];
 
         foreach ($siswas as $siswa) {
             $dataToExport[] = [
@@ -215,7 +215,6 @@ class SiswaController extends Controller implements HasMiddleware
                 $siswa->jurusan ? $siswa->jurusan->nama_jurusan : '',
                 $siswa->kelas ? $siswa->kelas->nama_kelas : '',
                 $siswa->password, // Menampilkan password/hak akses
-                $siswa->token,
             ];
         }
 
