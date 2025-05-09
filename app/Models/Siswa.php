@@ -34,14 +34,13 @@ class Siswa extends Model
     }
 
 
-	public function jurusan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-	{
-		return $this->belongsTo(\App\Models\Jurusan::class);
-	}
+    public function jurusan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Jurusan::class);
+    }
 
-	public function kela(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-	{
-		return $this->belongsTo(\App\Models\Kelas::class);
-	}
-
+    public function kelas(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Kelas::class);
+    }
 }
