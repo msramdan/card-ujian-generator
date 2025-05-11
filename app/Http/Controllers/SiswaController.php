@@ -131,10 +131,20 @@ class SiswaController extends Controller implements HasMiddleware
     }
 
 
-    public function kartu(Request $request, $idSiswa): View // Mengubah nama parameter
+    public function kartu(Request $request, $idSiswa): View
     {
         $token = $request->query('token');
-        $siswa = Siswa::with(['jurusan', 'kelas'])->find($idSiswa); // Menggunakan Eloquent
+
+        $siswa = DB::table('siswa')
+            ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
+            ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+            ->select(
+                'siswa.*',
+                'jurusan.nama_jurusan',
+                'kelas.nama_kelas'
+            )
+            ->where('siswa.id', $idSiswa)
+            ->first();
 
         if (!$siswa) {
             abort(404, 'Siswa tidak ditemukan');
@@ -150,7 +160,7 @@ class SiswaController extends Controller implements HasMiddleware
         ]);
 
         $renderer = new ImageRenderer(
-            new RendererStyle(110, 1), // margin: 1
+            new RendererStyle(110, 1),
             new SvgImageBackEnd()
         );
         $writer = new Writer($renderer);
