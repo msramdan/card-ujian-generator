@@ -67,7 +67,7 @@
         }
 
         .student-info tr td {
-            padding: 4px 6px;
+            padding: 1px 2px;
         }
 
         .student-info tr td:first-child {
