@@ -102,18 +102,26 @@ class SiswaController extends Controller implements HasMiddleware
      * Display the specified resource.
      * Menggunakan Route Model Binding lebih disarankan, tetapi mengikuti pola kode asli
      */
-    public function show($idSiswa): View // Mengubah nama parameter agar tidak bentrok dengan $id model
+    public function show($idSiswa): View
     {
-        $siswa = Siswa::with(['jurusan', 'kelas'])->findOrFail($idSiswa); // Menggunakan Eloquent untuk kemudahan
+        $siswa = DB::table('siswa')
+            ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
+            ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+            ->select(
+                'siswa.*',
+                'jurusan.nama_jurusan',
+                'kelas.nama_kelas'
+            )
+            ->where('siswa.id', $idSiswa)
+            ->firstOrFail();
 
-        // URL untuk QR Code (menggunakan token dari database)
         $url = route('kartu-peserta.kartu', [
             'id' => $siswa->id,
-            'token' => $siswa->token, // Mengambil token dari model Siswa
+            'token' => $siswa->token,
         ]);
 
         $renderer = new ImageRenderer(
-            new RendererStyle(200, 1), // margin: 1
+            new RendererStyle(200, 1),
             new SvgImageBackEnd()
         );
         $writer = new Writer($renderer);

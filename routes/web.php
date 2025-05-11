@@ -10,13 +10,11 @@ use App\Http\Controllers\{
 };
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('welcome'));
-
+Route::get('/', fn() => redirect()->route('dashboard'));
+Route::get('/kartu-peserta/{id}/kartu', [SiswaController::class, 'kartu'])->name('kartu-peserta.kartu');
 Route::middleware(['auth', 'web'])->group(function () {
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
-
     Route::get('/profile', ProfileController::class)->name('profile');
-
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleAndPermissionController::class);
 
@@ -27,10 +25,7 @@ Route::middleware(['auth', 'web'])->group(function () {
         Route::get('format-import', [SiswaController::class, 'formatImportSiswa'])->name('format_import');
         Route::resource('/', SiswaController::class)->parameters(['' => 'siswa']); // Pindahkan setelah route spesifik
     });
-
-    Route::get('/kartu-peserta/{id}/kartu', [SiswaController::class, 'kartu'])->name('kartu-peserta.kartu');
 });
-
 Route::middleware('auth')->group(function () {
     Route::resource('jurusan', JurusanController::class);
     Route::resource('kelas', KelasController::class);
