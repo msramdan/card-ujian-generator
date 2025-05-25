@@ -142,6 +142,22 @@ return [
             ]
         ]
     ],
+        [
+        'header' => 'Ruang Ujian',
+        'permissions' => [
+            'ruang ujian view'
+        ],
+        'menus' => [
+            [
+                'title' => 'Ruang Ujian',
+                'icon' => '<i class="bi bi-list"></i>',
+                'route' => '/ruang-ujian',
+                'permission' => 'ruang ujian view',
+                'permissions' => [],
+                'submenus' => []
+            ]
+        ]
+            ],
     [
         'header' => 'Siswa',
         'permissions' => [
@@ -157,7 +173,7 @@ return [
                 'submenus' => []
             ]
         ]
-            ],
+    ],
     [
         'header' => 'Utilities',
         'permissions' => [
@@ -199,6 +215,6 @@ return [
                 ]
             ]
         ]
-    ]
+    ],
 ]
 ];

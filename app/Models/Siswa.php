@@ -21,7 +21,7 @@ class Siswa extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['nama_siswa', 'nis', 'jurusan_id', 'kelas_id', 'password', 'token'];
+    protected $fillable = ['nama_siswa', 'nis', 'jurusan_id', 'kelas_id', 'password', 'token','ruang_ujian_id'];
 
     /**
      * Get the attributes that should be cast.

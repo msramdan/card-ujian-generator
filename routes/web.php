@@ -30,3 +30,5 @@ Route::middleware('auth')->group(function () {
     Route::resource('jurusan', JurusanController::class);
     Route::resource('kelas', KelasController::class);
 });
+
+Route::resource('ruang-ujian', App\Http\Controllers\RuangUjianController::class)->middleware('auth');

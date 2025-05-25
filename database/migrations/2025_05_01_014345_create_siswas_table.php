@@ -17,6 +17,7 @@ return new class extends Migration
 			$table->string('nis', 15);
 			$table->foreignId('jurusan_id')->nullable()->constrained('jurusan')->restrictOnUpdate()->nullOnDelete();
 			$table->foreignId('kelas_id')->nullable()->constrained('kelas')->restrictOnUpdate()->nullOnDelete();
+            $table->foreignId('ruang_ujian_id')->nullable()->constrained('ruang_ujian')->restrictOnUpdate()->nullOnDelete();
 			$table->string('password', 50);
 			$table->string('token', 100);
             $table->timestamps();

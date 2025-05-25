@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Siswa;
 use App\Models\Jurusan;
 use App\Models\Kelas;
+use App\Models\RuangUjian;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -23,11 +24,13 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
     private $skippedCount = 0;
     private $jurusanMap = [];
     private $kelasMap = [];
+    private $ruangUjianMap = [];
 
     public function __construct()
     {
         $this->jurusanMap = Jurusan::pluck('id', 'nama_jurusan')->toArray();
         $this->kelasMap = Kelas::pluck('id', 'nama_kelas')->toArray();
+        $this->ruangUjianMap = RuangUjian::pluck('id', 'nama_ruang_ujian')->toArray();
     }
 
     public function collection(Collection $rows)
@@ -50,6 +53,7 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
 
             $namaJurusan = $rowData['jurusan'];
             $namaKelas = $rowData['kelas'];
+            $namaRuangUjian = $rowData['ruang_ujian'];
 
             if (!isset($this->jurusanMap[$namaJurusan])) {
                 $this->errors[] = "Baris " . ($rowIndex + 2) . ": Jurusan '" . htmlspecialchars($namaJurusan) . "' tidak ditemukan di sistem.";
@@ -59,6 +63,12 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
 
             if (!isset($this->kelasMap[$namaKelas])) {
                 $this->errors[] = "Baris " . ($rowIndex + 2) . ": Kelas '" . htmlspecialchars($namaKelas) . "' tidak ditemukan di sistem.";
+                $this->skippedCount++;
+                continue;
+            }
+
+            if (!isset($this->ruangUjianMap[$namaRuangUjian])) {
+                $this->errors[] = "Baris " . ($rowIndex + 2) . ": Ruang Ujian '" . htmlspecialchars($namaRuangUjian) . "' tidak ditemukan di sistem.";
                 $this->skippedCount++;
                 continue;
             }
@@ -75,8 +85,9 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
                     'nis'        => $rowData['nis'],
                     'jurusan_id' => $this->jurusanMap[$namaJurusan],
                     'kelas_id'   => $this->kelasMap[$namaKelas],
-                    'password'   => $rowData['password'], // Password disimpan sebagai plain text
-                    'token'      => Str::random(20),   // Generate token saat impor
+                    'ruang_ujian_id' => $this->ruangUjianMap[$namaRuangUjian],
+                    'password'   => $rowData['password'],
+                    'token'      => Str::random(20),
                 ]);
                 $this->importedCount++;
             } catch (\Exception $e) {
@@ -90,10 +101,11 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
     {
         return [
             'nama_siswa' => 'required|string|max:255',
-            'nis'        => 'required|string|max:100', // Validasi unique dilakukan secara manual di collection()
+            'nis'        => 'required|string|max:100',
             'jurusan'    => 'required|string',
             'kelas'      => 'required|string',
-            'password'   => 'required|string|max:50', // Sesuai StoreSiswaRequest (max:50)
+            'ruang_ujian' => 'required|string', // Diubah dari nullable menjadi required
+            'password'   => 'required|string|max:50',
         ];
     }
 
@@ -104,6 +116,7 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
             'nis.required'        => 'Kolom nis wajib diisi.',
             'jurusan.required'    => 'Kolom jurusan wajib diisi.',
             'kelas.required'      => 'Kolom kelas wajib diisi.',
+            'ruang_ujian.required' => 'Kolom ruang_ujian wajib diisi.', // Pesan validasi baru
             'password.required'   => 'Kolom password wajib diisi.',
             'password.max'        => 'Kolom password maksimal 50 karakter.',
         ];
@@ -111,22 +124,9 @@ class ImportSiswa implements ToCollection, WithHeadingRow, WithValidation, Skips
 
     public function bindValue(\PhpOffice\PhpSpreadsheet\Cell\Cell $cell, $value)
     {
-        // Jika nama kolom (dari header) adalah 'nis' dan nilainya numerik
-        // Anda perlu cara untuk mengetahui nama kolom saat ini.
-        // Cara paling mudah adalah dengan tidak melakukan pengecekan nama kolom di sini
-        // dan membiarkan StringValueBinder bekerja lebih umum atau
-        // Anda bisa membuat StringValueBinder lebih cerdas dengan informasi header.
-
-        // Untuk pendekatan sederhana di sini, kita panggil binder kustom kita
         return (new StringValueBinder)->bindValue($cell, $value);
-
-        // ATAU logika sederhana langsung di sini:
-        // if ($cell->getColumn() === 'B' && is_numeric($value) && !is_float($value)) { // Asumsi NIS di kolom B (A=0, B=1, dst.)
-        //     $cell->setValueExplicit($value, DataType::TYPE_STRING);
-        //     return true;
-        // }
-        // return (new \PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder)->bindValue($cell, $value);
     }
+
     public function getErrors(): array
     {
         return $this->errors;

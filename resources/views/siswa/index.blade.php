@@ -59,6 +59,7 @@
                                             <th>{{ __('Nis') }}</th>
                                             <th>{{ __('Jurusan') }}</th>
                                             <th>{{ __('Kelas') }}</th>
+                                            <th>{{ __('Ruang Ujian') }}</th>
                                             <th>{{ __('Password') }}</th>
                                             <th>{{ __('Action') }}</th>
                                         </tr>
@@ -154,6 +155,10 @@
                     {
                         data: 'nama_kelas',
                         name: 'kelas.nama_kelas'
+                    },
+                                        {
+                        data: 'nama_ruang_ujian',
+                        name: 'ruang_ujian.nama_ruang_ujian'
                     },
                     {
                         data: 'password',

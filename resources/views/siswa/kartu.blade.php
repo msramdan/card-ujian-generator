@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='UTF-8'>
     <title>Cetak Kartu Siswa</title>
@@ -11,6 +12,7 @@
             * {
                 -webkit-print-color-adjust: exact;
             }
+
             .no-print {
                 display: none !important;
             }
@@ -154,6 +156,11 @@
                             <td><strong>{{ $siswa->nama_kelas }}</strong></td>
                         </tr>
                         <tr>
+                            <td>Ruang ujian</td>
+                            <td>:</td>
+                            <td><strong>{{ $siswa->nama_ruang_ujian }}</strong></td>
+                        </tr>
+                        <tr>
                             <td>Password</td>
                             <td>:</td>
                             <td><strong>{{ $siswa->password }}</strong></td>
@@ -186,4 +193,5 @@
         }
     </script>
 </body>
+
 </html>

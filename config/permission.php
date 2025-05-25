@@ -209,5 +209,6 @@ return [
         ['group' => 'jurusan', 'access' => ['jurusan view', 'jurusan create', 'jurusan edit', 'jurusan delete']],
         ['group' => 'kelas', 'access' => ['kelas view', 'kelas create', 'kelas edit', 'kelas delete']],
         ['group' => 'siswa', 'access' => ['siswa view', 'siswa create', 'siswa edit', 'siswa delete', 'siswa export', 'siswa import']],
+        ['group' => 'ruang ujian', 'access' => ['ruang ujian view', 'ruang ujian create', 'ruang ujian edit', 'ruang ujian delete']],
     ],
 ];

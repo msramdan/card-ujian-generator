@@ -24,6 +24,7 @@ class UpdateSiswaRequest extends FormRequest
 			'nis' => 'required|string|max:15',
 			'jurusan_id' => 'required|exists:App\Models\Jurusan,id',
 			'kelas_id' => 'required|exists:App\Models\Kelas,id',
+            'ruang_ujian_id' => 'required|exists:App\Models\RuangUjian,id',
 			'password' => 'required|string|max:50',
         ];
     }

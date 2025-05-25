@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Siswa, Jurusan, Kelas};
+use App\Models\{Siswa, Jurusan, Kelas, RuangUjian};
 use App\Http\Requests\Siswas\{StoreSiswaRequest, UpdateSiswaRequest, ImportSiswaRequest};
 use Illuminate\Contracts\View\View;
 use Yajra\DataTables\Facades\DataTables;
@@ -48,12 +48,14 @@ class SiswaController extends Controller implements HasMiddleware
             $siswas = DB::table('siswa')
                 ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
                 ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                ->leftJoin('ruang_ujian', 'siswa.ruang_ujian_id', '=', 'ruang_ujian.id')
                 ->select(
                     'siswa.id',
                     'siswa.nama_siswa',
                     'siswa.nis',
                     'jurusan.nama_jurusan',
                     'kelas.nama_kelas',
+                    'ruang_ujian.nama_ruang_ujian',
                     'siswa.password'
                 );
 
@@ -63,6 +65,9 @@ class SiswaController extends Controller implements HasMiddleware
                 })
                 ->addColumn('nama_kelas', function ($row) {
                     return $row->nama_kelas ?? '-'; // Memberi nilai default jika null
+                })
+                ->addColumn('nama_ruang_ujian', function ($row) {
+                    return $row->nama_ruang_ujian ?? '-'; // Memberi nilai default jika null
                 })
                 ->addColumn('action', 'siswa.include.action') // Pastikan view ini ada
                 ->rawColumns(['action'])
@@ -80,7 +85,8 @@ class SiswaController extends Controller implements HasMiddleware
         // Mengambil data jurusan dan kelas untuk dropdown
         $jurusans = Jurusan::orderBy('nama_jurusan')->get();
         $kelas = Kelas::orderBy('nama_kelas')->get();
-        return view('siswa.create', compact('jurusans', 'kelas'));
+        $ruang_ujian = RuangUjian::orderBy('nama_ruang_ujian')->get();
+        return view('siswa.create', compact('jurusans', 'kelas', 'ruang_ujian'));
     }
 
     /**
@@ -107,10 +113,12 @@ class SiswaController extends Controller implements HasMiddleware
         $siswa = DB::table('siswa')
             ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
             ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+            ->leftJoin('ruang_ujian', 'siswa.ruang_ujian_id', '=', 'ruang_ujian.id')
             ->select(
                 'siswa.*',
                 'jurusan.nama_jurusan',
-                'kelas.nama_kelas'
+                'kelas.nama_kelas',
+                'ruang_ujian.nama_ruang_ujian' // Add this line
             )
             ->where('siswa.id', $idSiswa)
             ->firstOrFail();
@@ -138,10 +146,12 @@ class SiswaController extends Controller implements HasMiddleware
         $siswa = DB::table('siswa')
             ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
             ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+            ->leftJoin('ruang_ujian', 'siswa.ruang_ujian_id', '=', 'ruang_ujian.id')
             ->select(
                 'siswa.*',
                 'jurusan.nama_jurusan',
-                'kelas.nama_kelas'
+                'kelas.nama_kelas',
+                'ruang_ujian.nama_ruang_ujian' // Added this line
             )
             ->where('siswa.id', $idSiswa)
             ->first();
@@ -178,7 +188,8 @@ class SiswaController extends Controller implements HasMiddleware
         // Jika relasi di model Siswa adalah 'jurusan' dan 'kelas'
         $jurusans = Jurusan::orderBy('nama_jurusan')->get();
         $kelas = Kelas::orderBy('nama_kelas')->get();
-        return view('siswa.edit', compact('siswa', 'jurusans', 'kelas'));
+        $ruang_ujian = RuangUjian::orderBy('nama_ruang_ujian')->get();
+        return view('siswa.edit', compact('siswa', 'jurusans', 'kelas', 'ruang_ujian'));
     }
 
     /**
@@ -217,22 +228,34 @@ class SiswaController extends Controller implements HasMiddleware
      */
     public function exportSiswa()
     {
-        $siswas = Siswa::with(['jurusan', 'kelas'])->get();
+        $siswas = DB::table('siswa')
+            ->leftJoin('jurusan', 'siswa.jurusan_id', '=', 'jurusan.id')
+            ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+            ->leftJoin('ruang_ujian', 'siswa.ruang_ujian_id', '=', 'ruang_ujian.id')
+            ->select(
+                'siswa.nama_siswa',
+                'siswa.nis',
+                'jurusan.nama_jurusan',
+                'kelas.nama_kelas',
+                'ruang_ujian.nama_ruang_ujian',
+                'siswa.password'
+            )
+            ->get();
         if ($siswas->isEmpty()) {
             return redirect()->route('siswa.index')->with('error', 'Tidak ada data siswa untuk diekspor.');
         }
 
         $dataToExport = [];
-        // Header
-        $dataToExport[] = ['Nama Siswa', 'NIS', 'Jurusan', 'Kelas', 'Password/Hak Akses'];
+        $dataToExport[] = ['Nama Siswa', 'NIS', 'Jurusan', 'Kelas', 'Ruangan Ujian', 'Password/Hak Akses'];
 
         foreach ($siswas as $siswa) {
             $dataToExport[] = [
                 $siswa->nama_siswa,
                 $siswa->nis,
-                $siswa->jurusan ? $siswa->jurusan->nama_jurusan : '',
-                $siswa->kelas ? $siswa->kelas->nama_kelas : '',
-                $siswa->password, // Menampilkan password/hak akses
+                $siswa->nama_jurusan ?? '',
+                $siswa->nama_kelas ?? '',
+                $siswa->nama_ruang_ujian ?? '',
+                $siswa->password,
             ];
         }
 

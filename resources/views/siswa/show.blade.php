@@ -51,6 +51,10 @@
                                         <td>{{ $siswa->nama_kelas }}</td>
                                     </tr>
                                     <tr>
+                                        <td class="fw-bold">{{ __('Ruang Ujian') }}</td>
+                                        <td>{{ $siswa->nama_ruang_ujian }}</td>
+                                    </tr>
+                                    <tr>
                                         <td class="fw-bold">{{ __('Password') }}</td>
                                         <td>{{ $siswa->password }}</td>
                                     </tr>

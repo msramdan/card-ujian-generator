@@ -1,11 +1,12 @@
 <table>
     <thead>
         <tr>
-            <th>nama_siswa</th>
-            <th>nis</th>
-            <th>jurusan</th> {{-- Akan diisi dengan nama jurusan --}}
-            <th>kelas</th> {{-- Akan diisi dengan nama kelas --}}
-            <th>password</th>
+            <th>Nama Siswa</th>
+            <th>NIS</th>
+            <th>Jurusan</th> {{-- Akan diisi dengan nama jurusan --}}
+            <th>Kelas</th> {{-- Akan diisi dengan nama kelas --}}
+            <th>Ruang Ujian</th>
+            <th>Password</th>
         </tr>
     </thead>
     <tbody>
